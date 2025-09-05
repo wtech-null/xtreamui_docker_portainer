@@ -1,0 +1,74 @@
+# Xtream Codes
+[client]
+port                            = 3306
+
+[mysqld_safe]
+nice                            = 0
+#malloc settings
+malloc-lib=/usr/lib/x86_64-linux-gnu/libtcmalloc.so.4.3.0
+
+[mysqld]
+user                            = mysql
+port                            = 7999
+basedir                         = /usr
+datadir                         = /var/lib/mysql
+tmpdir                          = /tmp
+lc-messages-dir                 = /usr/share/mysql
+skip-external-locking
+skip-name-resolve               =1
+bind-address                    = *
+
+key_buffer_size                 = 128M
+myisam_sort_buffer_size         = 4M
+max_allowed_packet              = 64M
+myisam-recover-options          = BACKUP
+max_length_for_sort_data        = 8192
+query_cache_limit               = 0
+query_cache_size                = 0
+query_cache_type                = 0
+expire_logs_days                = 10
+max_binlog_size                 = 100M
+max_connections                 = 8192
+back_log                        = 4096
+open_files_limit                = 20240
+innodb_open_files               = 20240
+max_connect_errors              = 3072
+table_open_cache                = 4096
+table_definition_cache          = 4096
+tmp_table_size                  = 1G
+max_heap_table_size             = 1G
+
+max_statement_time = 100
+
+innodb_buffer_pool_size         = 12G
+innodb_read_io_threads          = 64
+innodb_write_io_threads         = 64
+innodb_thread_concurrency       = 0
+innodb_flush_log_at_trx_commit  = 0
+innodb_flush_method             = O_DIRECT
+performance_schema              = 0
+innodb-file-per-table           = 1
+innodb_io_capacity              = 20000
+innodb_table_locks              = 0
+innodb_lock_wait_timeout        = 0
+
+sql_mode                        = "NO_ENGINE_SUBSTITUTION"
+
+[mariadb]
+
+thread_cache_size               = 8192
+thread_handling                 = pool-of-threads
+thread_pool_size                = 12
+thread_pool_idle_timeout        = 20
+thread_pool_max_threads         = 1024
+
+[mysqldump]
+quick
+quote-names
+max_allowed_packet              = 128M
+complete-insert
+
+[mysql]
+
+[isamchk]
+key_buffer_size                 = 16M

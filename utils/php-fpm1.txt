@@ -1,0 +1,20 @@
+[global]
+pid = /home/xtreamcodes/iptv_xtream_codes/php/1.pid
+events.mechanism = epoll
+daemonize = yes
+rlimit_files = 10000
+[xtreamcodes]
+user = xtreamcodes
+group = xtreamcodes
+listen = /home/xtreamcodes/iptv_xtream_codes/php/1.sock
+listen.allowed_clients = 127.0.0.1
+listen.owner = xtreamcodes
+listen.group = xtreamcodes
+listen.mode = 0660
+pm = dynamic
+pm.max_children = 400
+pm.start_servers = 32
+pm.min_spare_servers = 16
+pm.max_spare_servers = 32
+pm.process_idle_timeout = 3s
+security.limit_extensions = .php

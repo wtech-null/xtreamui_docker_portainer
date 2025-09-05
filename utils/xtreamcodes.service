@@ -1,0 +1,18 @@
+[Unit]
+SourcePath=/home/xtreamcodes/iptv_xtream_codes/service
+Description=xtreamcodes service
+After=network.target
+StartLimitIntervalSec=0
+ 
+[Service]
+Type=simple
+User=root
+Restart=on-failure
+RestartSec=5
+ExecStart=/bin/bash /home/xtreamcodes/iptv_xtream_codes/service start
+ExecRestart=/bin/bash /home/xtreamcodes/iptv_xtream_codes/service restart
+ExecStop=/bin/bash /home/xtreamcodes/iptv_xtream_codes/service stop
+ExecReload=/bin/bash /home/xtreamcodes/iptv_xtream_codes/service reload
+ 
+[Install]
+WantedBy=multi-user.target

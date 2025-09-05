@@ -1,0 +1,2 @@
+# Xtream-UI
+0 */3 * * * echo "" > /home/xtreamcodes/iptv_xtream_codes/logs/main.error.log && echo "" > /home/xtreamcodes/iptv_xtream_codes/logs/main.access.log
