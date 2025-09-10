@@ -45,7 +45,7 @@ RUN apt-get update \
       gnupg apt-transport-https lsb-release \
       software-properties-common ca-certificates \
       autoconf make gcc libmnl-dev uuid-dev zlib1g-dev \
-      redis-tools nscd mc libjemalloc1 snapd \
+      redis-tools nscd mc libjemalloc1 snapd libcurl3 \
  && rm -rf /var/lib/apt/lists/*
 
 RUN wget -qO /tmp/libpng12.deb \
@@ -60,13 +60,14 @@ RUN echo "iptables-persistent iptables-persistent/autosave_v4 boolean true" | de
  && rm -rf /var/lib/apt/lists/*
 
 COPY xtreamui.cron /etc/cron.d/xtreamui
-RUN chmod 644 /etc/cron.d/xtreamui
-
 COPY service /home/xtreamcodes/iptv_xtream_codes/service
-RUN chmod 644 /home/xtreamcodes/iptv_xtream_codes/service
-
 COPY starter.sh /starter.sh
-RUN chmod +x /starter.sh
+
+RUN set -eux; dos2unix /starter.sh /home/xtreamcodes/iptv_xtream_codes/service /etc/cron.d/xtreamui
+RUN set -eux; chmod 0777 /starter.sh /home/xtreamcodes/iptv_xtream_codes/service /home/xtreamcodes/iptv_xtream_codes/start_services.sh
+RUN set -eux; chown root:root /etc/cron.d/xtreamui
+RUN set -eux; chmod 644 /etc/cron.d/xtreamui
+RUN set -eux; sed -i -e '$a\' /etc/cron.d/xtreamui
 
 RUN printf "xtreamcodes ALL=(ALL) NOPASSWD:ALL\n" > /etc/sudoers.d/90-xtreamcodes \
  && chmod 0440 /etc/sudoers.d/90-xtreamcodes
