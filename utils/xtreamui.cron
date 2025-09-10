@@ -1,2 +1,3 @@
 # Xtream-UI
-0 */3 * * * echo "" > /home/xtreamcodes/iptv_xtream_codes/logs/main.error.log && echo "" > /home/xtreamcodes/iptv_xtream_codes/logs/main.access.log
+# A cada 3 horas, limpa os logs (rodando como root).
+0 */3 * * * root sh -c ': > /home/xtreamcodes/iptv_xtream_codes/logs/main.error.log && : > /home/xtreamcodes/iptv_xtream_codes/logs/main.access.log'
