@@ -107,7 +107,6 @@ RUN wget -q -O /etc/cron.d/xtreamui https://raw.githubusercontent.com/wtech-null
 RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/service https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/main_folder/service
 RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/permissions.sh https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/main_folder/permissions.sh
 RUN wget -q -O /home/starter.sh https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/system/starter.sh
-RUN wget -q -O /etc/sudoers.d/90-xtreamcodes https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/system/90-xtreamui
 RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/config https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/main_folder/config
 RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/config.py https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/main_folder/config.py
 RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/nginx/conf/nginx.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/nginx/nginx.conf
@@ -121,12 +120,16 @@ RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/php/etc/3.conf https://raw.gi
 RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/php/etc/4.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/php/php-fpm4.conf
 RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/start_services.sh https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/main_folder/start_services.sh
 
+# Sudoers
+RUN printf 'xtreamcodes ALL=(root) NOPASSWD: /sbin/iptables, /usr/bin/chattr\n' > /etc/sudoers.d/90-xtreamcodes \
+    && chown root:root /etc/sudoers.d/90-xtreamcodes \
+    && chmod 0440 /etc/sudoers.d/90-xtreamcodes
+
 # Permissions
 RUN dos2unix /home/starter.sh /home/xtreamcodes/iptv_xtream_codes/service /etc/cron.d/xtreamui || true \
  && chmod 0777 /home/starter.sh /home/xtreamcodes/iptv_xtream_codes/service /home/xtreamcodes/iptv_xtream_codes/start_services.sh \
- && chown root:root /etc/cron.d/xtreamui /etc/sudoers.d/90-xtreamcodes \
+ && chown root:root /etc/cron.d/xtreamui \
  && chmod 0644 /etc/cron.d/xtreamui \
- && chmod 0440 /etc/sudoers.d/90-xtreamcodes \
  && chown -R xtreamcodes:xtreamcodes /home/xtreamcodes /home/utils \
  && usermod -aG sudo xtreamcodes \
  && chmod 0777 /home/xtreamcodes/iptv_xtream_codes/permissions.sh \
