@@ -5,7 +5,7 @@ WORKDIR /home/xtreamcodes
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=America/Sao_Paulo
-ENV LD_PRELOAD=/usr/lib/libcurl.so.3
+# ENV LD_PRELOAD=/usr/lib/libcurl.so.3
 
 # Mirrors & APT tuning
 RUN sed -ri 's|http://archive.ubuntu.com/ubuntu|http://ubuntu.c3sl.ufpr.br/ubuntu|g; s|http://security.ubuntu.com/ubuntu|http://ubuntu.c3sl.ufpr.br/ubuntu|g' /etc/apt/sources.list \
@@ -19,7 +19,7 @@ RUN useradd --system --no-create-home --home-dir /home/xtreamcodes --shell /bin/
 
 # Repos
 RUN apt-get update \
- && apt-get install -y software-properties-common ca-certificates gnupg dirmngr curl \
+ && apt-get install -y software-properties-common ca-certificates gnupg dirmngr \
  && mkdir -p /root/.gnupg && chmod 700 /root/.gnupg \
  && printf 'keyserver hkps://keyserver.ubuntu.com:443\nkeyserver hkps://keys.openpgp.org\n' > /root/.gnupg/dirmngr.conf \
  && add-apt-repository -y ppa:ondrej/php \
@@ -27,8 +27,7 @@ RUN apt-get update \
  && add-apt-repository -y ppa:ondrej/nginx \
  && add-apt-repository -y ppa:maxmind/ppa \
  && apt-get update \
- && apt-get install -y libcurl4 libcurl4-openssl-dev \
- && ln -sf /usr/lib/x86_64-linux-gnu/libcurl.so.4 /usr/lib/libcurl.so.3 \
+ && apt-get install -y \
  && ldconfig \
  && apt-get upgrade -y \
  && apt-get dist-upgrade -y
@@ -53,6 +52,7 @@ RUN apt-get update \
       software-properties-common ca-certificates \
       autoconf make gcc libmnl-dev uuid-dev zlib1g-dev \
       redis-tools nscd mc libjemalloc1 snapd openssl libcurl3 \
+      python-paramiko \
  && rm -rf /var/lib/apt/lists/*
 
 # libpng12 legacy
@@ -158,7 +158,7 @@ RUN apt-get update \
 VOLUME ["/home/xtreamcodes/iptv_xtream_codes", "/home/utils"]
 
 # Ports
-EXPOSE 80 443 1935 81 2095 2096
+EXPOSE 80 443 1935 2095 2096
 
 # Entrypoint
 ENTRYPOINT ["/home/starter.sh"]

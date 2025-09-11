@@ -10,20 +10,14 @@ services:
     environment:
       - TZ=America/Sao_Paulo
     ports:
-      - "80:80"
-      - "443:443"
-      - "81:81"
-      - "1935:1935"
-      - "2095:2095"
-      - "2096:2096"
+      - "0.0.0.0:80:80"
+      - "0.0.0.0:443:443"
+      - "0.0.0.0:1935:443"
+      - "0.0.0.0:2095:2095"
+      - "0.0.0.0:2096:2096"
     volumes:
       - xtreamui_core:/home/xtreamcodes/iptv_xtream_codes
       - xtreamui_utils:/home/utils
-    ulimits:
-      nofile:
-        soft: 655350
-        hard: 655350
-      nproc: 655350
 
 volumes:
   xtreamui_core:
@@ -33,5 +27,5 @@ volumes:
 
 networks:
   default:
-    name: xtreamui_net
+    name: xtreamui_network
     driver: bridge
