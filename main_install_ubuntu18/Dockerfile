@@ -52,7 +52,7 @@ RUN apt-get update \
       software-properties-common ca-certificates \
       autoconf make gcc libmnl-dev uuid-dev zlib1g-dev \
       redis-tools nscd mc libjemalloc1 snapd openssl libcurl3 \
-      python-paramiko \
+      python-paramiko libzip4 \
  && rm -rf /var/lib/apt/lists/*
 
 # libpng12 legacy
@@ -125,6 +125,9 @@ RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/php/etc/2.conf https://raw.gi
 RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/php/etc/3.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/php/php-fpm3.conf
 RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/php/etc/4.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/php/php-fpm4.conf
 RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/start_services.sh https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/main_folder/start_services.sh
+RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/pytools/balancer.py https://raw.githubusercontent.com/emre1393/xtreamui_mirror/refs/heads/master/withmariadb/balancer.py
+RUN wget -q -O /etc/security/limits.d/99-nofile.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/refs/heads/main/utils/system/99-nofile.conf
+RUN wget -q -O /etc/sysctl.d/99-xtreamui.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/refs/heads/main/utils/system/sysctl.conf
 
 # Sudoers
 RUN printf 'xtreamcodes ALL=(root) NOPASSWD: /sbin/iptables, /usr/bin/chattr\n' > /etc/sudoers.d/90-xtreamcodes \
@@ -142,7 +145,7 @@ RUN dos2unix /home/starter.sh /home/xtreamcodes/iptv_xtream_codes/service /etc/c
  && chattr -f -i /home/xtreamcodes/iptv_xtream_codes/GeoLite2.mmdb >/dev/null 2>&1 || true \
  && find /home/xtreamcodes/iptv_xtream_codes/admin/ -type f -exec chmod 644 {} \; \
  && find /home/xtreamcodes/iptv_xtream_codes/admin/ -type d -exec chmod 755 {} \; \
- && sed -i 's|https://raw.githubusercontent.com/emre1393/xtreamui_mirror/refs/heads/master/balancer.py|https://github.com/emre1393/xtreamui_mirror/raw/master/withmariadb/balancer.py|g' /home/xtreamcodes/iptv_xtream_codes/pytools/balancer.py \
+ && chmod 0777 /home/xtreamcodes/iptv_xtream_codes/pytools/balancer.py \
  && chmod +x /home/xtreamcodes/iptv_xtream_codes/nginx/sbin/nginx || true \
  && chmod +x /home/xtreamcodes/iptv_xtream_codes/nginx_rtmp/sbin/nginx_rtmp || true \
  && find /home/xtreamcodes/iptv_xtream_codes/wwwdir/ -type f -exec chmod 644 {} \; \
