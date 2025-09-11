@@ -68,23 +68,23 @@ RUN echo "iptables-persistent iptables-persistent/autosave_v4 boolean true" | de
  && rm -rf /var/lib/apt/lists/*
 
 # Downloads and Extracts
-RUN wget -q -O /tmp/xtreamcodes.tar.gz https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/zipfiles/main.tar.gz \
+RUN wget -q -O /tmp/xtreamcodes.tar.gz https://media.githubusercontent.com/media/wtech-null/xtreamui_docker_portainer/refs/heads/main/zipfiles/main.tar.gz \
  && tar -zxvf /tmp/xtreamcodes.tar.gz -C /home/xtreamcodes/ >/dev/null \
  && rm -f /tmp/xtreamcodes.tar.gz
 
-RUN wget -q -O /tmp/update.zip https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/zipfiles/release_22f.zip \
+RUN wget -q -O /tmp/update.zip https://media.githubusercontent.com/media/wtech-null/xtreamui_docker_portainer/refs/heads/main/zipfiles/release_22f.zip \
  && unzip -o /tmp/update.zip -d /tmp/update/ >/dev/null \
  && cp -rf /tmp/update/XtreamUI-master/* /home/xtreamcodes/iptv_xtream_codes/ >/dev/null \
  && rm -rf /tmp/update /tmp/update.zip \
  && chown -R xtreamcodes:xtreamcodes /home/xtreamcodes
 
-RUN wget -q -O /tmp/update2.zip https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/zipfiles/newstuff.zip \
+RUN wget -q -O /tmp/update2.zip https://media.githubusercontent.com/media/wtech-null/xtreamui_docker_portainer/refs/heads/main/zipfiles/newstuff.zip \
  && unzip -o /tmp/update2.zip -d /tmp/update2/ >/dev/null \
  && cp -rf /tmp/update2/* /home/xtreamcodes/iptv_xtream_codes/ >/dev/null \
  && rm -rf /tmp/update2 /tmp/update2.zip \
  && chown -R xtreamcodes:xtreamcodes /home/xtreamcodes
 
-RUN wget -q -O /tmp/xtreamuithings.zip https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/zipfiles/xtreamui-things-master.zip \
+RUN wget -q -O /tmp/xtreamuithings.zip https://media.githubusercontent.com/media/wtech-null/xtreamui_docker_portainer/refs/heads/main/zipfiles/xtreamui-things-master.zip \
  && unzip -o /tmp/xtreamuithings.zip -d /tmp/ >/dev/null \
  && mkdir -p /home/xtreamcodes/iptv_xtream_codes/admin \
  && cp -rf /tmp/xtreamui-things-master/admin-modified/* /home/xtreamcodes/iptv_xtream_codes/admin/ >/dev/null \
@@ -103,28 +103,28 @@ RUN mkdir -p \
   /home/xtreamcodes/iptv_xtream_codes/admin
 
 # Utils & configs
-RUN wget -q -O /etc/cron.d/xtreamui https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/crons/xtreamui.cron \
- && wget -q -O /home/xtreamcodes/iptv_xtream_codes/service https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/main_folder/service \
- && wget -q -O /home/xtreamcodes/iptv_xtream_codes/permissions.sh https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/main_folder/permissions.sh \
- && wget -q -O /home/starter.sh https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/system/starter.sh \
- && wget -q -O /etc/sudoers.d/90-xtreamcodes https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/system/90-xtreamui \
- && wget -q -O /home/xtreamcodes/iptv_xtream_codes/config https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/main_folder/config \
- && wget -q -O /home/xtreamcodes/iptv_xtream_codes/config.py https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/main_folder/config.py \
- && wget -q -O /home/xtreamcodes/iptv_xtream_codes/nginx/conf/nginx.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/nginx/nginx.conf \
- && wget -q -O /home/xtreamcodes/iptv_xtream_codes/nginx/conf/dhparam.pem https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/nginx/dhparam.pem \
- && wget -q -O /home/xtreamcodes/iptv_xtream_codes/nginx_rtmp/conf/nginx.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/nginx/nginx_rtmp.conf \
- && wget -q -O /home/xtreamcodes/iptv_xtream_codes/wwwdir/index.php https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/www/index.php \
- && wget -q -O /home/xtreamcodes/iptv_xtream_codes/nginx/conf/balance.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/nginx/balance.conf \
- && wget -q -O /home/xtreamcodes/iptv_xtream_codes/php/etc/1.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/php/php-fpm1.conf \
- && wget -q -O /home/xtreamcodes/iptv_xtream_codes/php/etc/2.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/php/php-fpm2.conf \
- && wget -q -O /home/xtreamcodes/iptv_xtream_codes/php/etc/3.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/php/php-fpm3.conf \
- && wget -q -O /home/xtreamcodes/iptv_xtream_codes/php/etc/4.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/php/php-fpm4.conf \
- && wget -q -O /home/xtreamcodes/iptv_xtream_codes/start_services.sh https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/main_folder/start_services.sh
+RUN wget -q -O /etc/cron.d/xtreamui https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/crons/xtreamui.cron
+RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/service https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/main_folder/service
+RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/permissions.sh https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/main_folder/permissions.sh
+RUN wget -q -O /home/starter.sh https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/system/starter.sh
+RUN wget -q -O /etc/sudoers.d/90-xtreamcodes https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/system/90-xtreamui
+RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/config https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/main_folder/config
+RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/config.py https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/main_folder/config.py
+RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/nginx/conf/nginx.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/nginx/nginx.conf
+RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/nginx/conf/dhparam.pem https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/nginx/dhparam.pem
+RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/nginx_rtmp/conf/nginx.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/nginx/nginx_rtmp.conf
+RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/wwwdir/index.html https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/www/index.html
+RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/nginx/conf/balance.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/nginx/balance.conf
+RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/php/etc/1.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/php/php-fpm1.conf
+RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/php/etc/2.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/php/php-fpm2.conf
+RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/php/etc/3.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/php/php-fpm3.conf
+RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/php/etc/4.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/php/php-fpm4.conf
+RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/start_services.sh https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/main_folder/start_services.sh
 
 # Permissions
 RUN dos2unix /home/starter.sh /home/xtreamcodes/iptv_xtream_codes/service /etc/cron.d/xtreamui || true \
  && chmod 0777 /home/starter.sh /home/xtreamcodes/iptv_xtream_codes/service /home/xtreamcodes/iptv_xtream_codes/start_services.sh \
- && chown root:root /etc/cron.d/xtreamui \
+ && chown root:root /etc/cron.d/xtreamui /etc/sudoers.d/90-xtreamcodes \
  && chmod 0644 /etc/cron.d/xtreamui \
  && chmod 0440 /etc/sudoers.d/90-xtreamcodes \
  && chown -R xtreamcodes:xtreamcodes /home/xtreamcodes /home/utils \
