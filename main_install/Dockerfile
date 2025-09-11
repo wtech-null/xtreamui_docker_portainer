@@ -147,7 +147,7 @@ RUN dos2unix /home/starter.sh /home/xtreamcodes/iptv_xtream_codes/service /etc/c
 VOLUME ["/home/xtreamcodes/iptv_xtream_codes", "/home/utils"]
 
 # Ports
-EXPOSE 80 443 1935 81
+EXPOSE 80 443 1935 81 2095 2096
 
 # Entrypoint
 ENTRYPOINT ["/home/starter.sh"]
