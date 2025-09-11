@@ -16,6 +16,22 @@ start() {
   fi
   echo 'Starting xtreamcodes...'
 
+  sudo killall -u xtreamcodes
+  sleep 1
+  sudo killall -u xtreamcodes
+  sleep 1
+  sudo killall -u xtreamcodes
+  sleep 1
+  sudo pkill -9 php
+  sleep 1
+  sudo pkill -9 php-fpm
+  sleep 1
+  sudo pkill -9 nginx
+  sleep 1
+  sudo pkill -9 nginx_rtmp
+  sleep 1
+  sudo pkill -9 service
+  sleep 1
   kill $(ps aux | grep 'xtreamcodes' | grep -v grep | grep -v '/home/xtreamcodes/iptv_xtream_codes/service' | awk '{print $2}') 2>/dev/null
   sleep 1
   kill $(ps aux | grep 'xtreamcodes' | grep -v grep | grep -v '/home/xtreamcodes/iptv_xtream_codes/service' | awk '{print $2}') 2>/dev/null
@@ -56,10 +72,20 @@ stop() {
   sleep 1
   sudo killall -u xtreamcodes
   sleep 1
-  kill $(ps aux | grep 'xtreamcodes' | grep -v grep | grep -v '/home/xtreamcodes/iptv_xtream_codes/service' | awk '{print $2}') 2>/dev/null
+  sudo pkill -9 php
+  sleep 1
+  sudo pkill -9 php-fpm
+  sleep 1
+  sudo pkill -9 nginx
+  sleep 1
+  sudo pkill -9 nginx_rtmp
+  sleep 1
+  sudo pkill -9 service
   sleep 1
   kill $(ps aux | grep 'xtreamcodes' | grep -v grep | grep -v '/home/xtreamcodes/iptv_xtream_codes/service' | awk '{print $2}') 2>/dev/null
-  sleep 1
+  sleep 3
+  kill $(ps aux | grep 'xtreamcodes' | grep -v grep | grep -v '/home/xtreamcodes/iptv_xtream_codes/service' | awk '{print $2}') 2>/dev/null
+  sleep 3
   kill $(ps aux | grep 'xtreamcodes' | grep -v grep | grep -v '/home/xtreamcodes/iptv_xtream_codes/service' | awk '{print $2}') 2>/dev/null
   sleep 2
 

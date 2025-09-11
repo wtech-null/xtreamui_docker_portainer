@@ -12,6 +12,9 @@ if [ -f "/home/xtreamcodes/iptv_xtream_codes/start_services.sh" ]; then
     echo "Stopping service..."
     /home/xtreamcodes/iptv_xtream_codes/service stop >/dev/null 2>&1 || true
     sleep 8
+    echo "Set-up permissions..."
+    bash /home/xtreamcodes/iptv_xtream_codes/permissions.sh >/dev/null 2>&1 || true
+    sleep 8
     echo "Starting service..."
     sleep 8
     exec /home/xtreamcodes/iptv_xtream_codes/service start

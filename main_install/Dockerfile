@@ -52,13 +52,19 @@ RUN apt-get update \
       gnupg apt-transport-https lsb-release \
       software-properties-common ca-certificates \
       autoconf make gcc libmnl-dev uuid-dev zlib1g-dev \
-      redis-tools nscd mc libjemalloc1 snapd libcurl3 \
+      redis-tools nscd mc libjemalloc1 snapd openssl libcurl3 \
  && rm -rf /var/lib/apt/lists/*
 
 # libpng12 legacy
 RUN wget -qO /tmp/libpng12.deb http://ubuntu.c3sl.ufpr.br/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_amd64.deb \
  && dpkg -i /tmp/libpng12.deb || true \
  && rm -f /tmp/libpng12.deb
+
+ # libssl1.1
+ RUN wget -qO /tmp/libssl1.1.deb \
+    http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb \
+ && dpkg -i /tmp/libssl1.1.deb \
+ && rm /tmp/libssl1.1.deb
 
 # iptables-persistent (preseed)
 RUN echo "iptables-persistent iptables-persistent/autosave_v4 boolean true" | debconf-set-selections \
