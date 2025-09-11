@@ -4,7 +4,7 @@ services:
   xtreamui-main:
     image: xtreamui-core:latest
     container_name: xtreamui-main
-    shm_size: '4G'
+    shm_size: '4096M'
     privileged: true    
     restart: unless-stopped
     environment:
@@ -20,12 +20,7 @@ services:
 
     sysctls:
       net.ipv4.tcp_congestion_control: "bbr"
-      net.core.default_qdisc: "fq"
       net.core.somaxconn: "65535"
-      net.core.netdev_max_backlog: "250000"
-      net.core.optmem_max: "65535"
-      net.core.netdev_budget: "6000"
-      net.core.netdev_budget_usecs: "20000"
       net.ipv4.tcp_max_tw_buckets: "1440000"
       net.ipv4.tcp_max_syn_backlog: "65535"
       net.ipv4.ip_local_port_range: "1024 65000"
@@ -42,11 +37,10 @@ services:
       net.ipv6.conf.all.disable_ipv6: "1"
       net.ipv6.conf.default.disable_ipv6: "1"
       net.ipv6.conf.lo.disable_ipv6: "1"
-      net.netfilter.nf_conntrack_max: "8000000"        
 
     ports:
-      - "0.0.0.0:80:80"
-      - "0.0.0.0:443:443"
+      - "0.0.0.0:8881:80"
+      - "0.0.0.0:9443:443"
       - "0.0.0.0:2095:2095"
       - "0.0.0.0:2096:2096"
 

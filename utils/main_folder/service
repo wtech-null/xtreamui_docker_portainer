@@ -15,7 +15,7 @@ start() {
     return 1
   fi
   echo 'Starting xtreamcodes...'
-
+  echo 'Killing old process'
   sudo killall -u xtreamcodes
   sleep 1
   sudo killall -u xtreamcodes
@@ -38,11 +38,12 @@ start() {
   sleep 1
   kill $(ps aux | grep 'xtreamcodes' | grep -v grep | grep -v '/home/xtreamcodes/iptv_xtream_codes/service' | awk '{print $2}') 2>/dev/null
   sleep 2
-
+  echo 'Starting services'
   sudo -u xtreamcodes /home/xtreamcodes/iptv_xtream_codes/php/bin/php /home/xtreamcodes/iptv_xtream_codes/crons/setup_cache.php
   sudo -u xtreamcodes /home/xtreamcodes/iptv_xtream_codes/php/bin/php /home/xtreamcodes/iptv_xtream_codes/tools/signal_receiver.php >/dev/null 2>/dev/null &
   sudo -u xtreamcodes /home/xtreamcodes/iptv_xtream_codes/php/bin/php /home/xtreamcodes/iptv_xtream_codes/tools/pipe_reader.php >/dev/null 2>/dev/null &
-  chown -R xtreamcodes:xtreamcodes /home/xtreamcodes >/dev/null 2>/dev/null
+  chown -Rf xtreamcodes:xtreamcodes /home/xtreamcodes >/dev/null 2>/dev/null
+  chown -Rf xtreamcodes:xtreamcodes /home/xtreamcodes/* >/dev/null 2>/dev/null
   sleep 1
   start-stop-daemon --start --quiet --pidfile /home/xtreamcodes/iptv_xtream_codes/php/1.pid --exec /home/xtreamcodes/iptv_xtream_codes/php/sbin/php-fpm -- --daemonize --fpm-config /home/xtreamcodes/iptv_xtream_codes/php/etc/1.conf
   start-stop-daemon --start --quiet --pidfile /home/xtreamcodes/iptv_xtream_codes/php/2.pid --exec /home/xtreamcodes/iptv_xtream_codes/php/sbin/php-fpm -- --daemonize --fpm-config /home/xtreamcodes/iptv_xtream_codes/php/etc/2.conf
