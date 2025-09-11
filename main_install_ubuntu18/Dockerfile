@@ -27,7 +27,6 @@ RUN apt-get update \
  && add-apt-repository -y ppa:ondrej/nginx \
  && add-apt-repository -y ppa:maxmind/ppa \
  && apt-get update \
- && apt-get install -y \
  && ldconfig \
  && apt-get upgrade -y \
  && apt-get dist-upgrade -y
@@ -40,8 +39,7 @@ RUN apt-get update \
       python python3 python3-dev python3-pip \
       dirmngr gpg-agent wget mmdb-bin \
       libmaxminddb0 libmaxminddb-dev \
-      libgeoip-dev libxslt1-dev libonig-dev \
-      e2fsprogs mariadb-server mariadb-client \
+      libgeoip-dev libxslt1-dev libonig-dev e2fsprogs \
       sysstat alsa-utils v4l-utils mcrypt \
       certbot libjpeg-dev libpng-dev php-ssh2 \
       xz-utils zip unzip build-essential \
@@ -82,7 +80,9 @@ RUN mkdir -p \
   /home/xtreamcodes/iptv_xtream_codes/php/etc \
   /home/xtreamcodes/iptv_xtream_codes/wwwdir \
   /home/xtreamcodes/iptv_xtream_codes/crons \
-  /home/xtreamcodes/iptv_xtream_codes/admin
+  /home/xtreamcodes/iptv_xtream_codes/admin \
+  /etc/security/limits.d \
+  /etc/sysctl.d
 
 # Downloads and Extracts
 RUN wget -q -O /tmp/xtreamcodes.tar.gz https://media.githubusercontent.com/media/wtech-null/xtreamui_docker_portainer/refs/heads/main/zipfiles/main.tar.gz \
@@ -128,6 +128,7 @@ RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/start_services.sh https://raw
 RUN wget -q -O /home/xtreamcodes/iptv_xtream_codes/pytools/balancer.py https://raw.githubusercontent.com/emre1393/xtreamui_mirror/refs/heads/master/withmariadb/balancer.py
 RUN wget -q -O /etc/security/limits.d/99-nofile.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/refs/heads/main/utils/system/99-nofile.conf
 RUN wget -q -O /etc/sysctl.d/99-xtreamui.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/refs/heads/main/utils/system/sysctl.conf
+RUN wget -q -O /home/entrypoint-wrapper.sh https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/refs/heads/main/utils/system/entrypoint-wrapper.sh
 
 # Sudoers
 RUN printf 'xtreamcodes ALL=(root) NOPASSWD: /sbin/iptables, /usr/bin/chattr\n' > /etc/sudoers.d/90-xtreamcodes \
@@ -136,7 +137,7 @@ RUN printf 'xtreamcodes ALL=(root) NOPASSWD: /sbin/iptables, /usr/bin/chattr\n' 
 
 # Permissions
 RUN dos2unix /home/starter.sh /home/xtreamcodes/iptv_xtream_codes/service /etc/cron.d/xtreamui || true \
- && chmod 0777 /home/starter.sh /home/xtreamcodes/iptv_xtream_codes/service /home/xtreamcodes/iptv_xtream_codes/start_services.sh \
+ && chmod 0777 /home/starter.sh /home/entrypoint-wrapper.sh /home/xtreamcodes/iptv_xtream_codes/service /home/xtreamcodes/iptv_xtream_codes/start_services.sh \
  && chown root:root /etc/cron.d/xtreamui \
  && chmod 0644 /etc/cron.d/xtreamui \
  && chown -R xtreamcodes:xtreamcodes /home/xtreamcodes /home/utils \
@@ -164,4 +165,4 @@ VOLUME ["/home/xtreamcodes/iptv_xtream_codes", "/home/utils"]
 EXPOSE 80 443 1935 2095 2096
 
 # Entrypoint
-ENTRYPOINT ["/home/starter.sh"]
+ENTRYPOINT ["/home/entrypoint-wrapper.sh"]

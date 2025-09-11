@@ -17,7 +17,7 @@ if [ -f "/home/xtreamcodes/iptv_xtream_codes/start_services.sh" ]; then
     sleep 8
     echo "Starting service..."
     sleep 8
-    exec /home/xtreamcodes/iptv_xtream_codes/service start || true
+    exec /home/xtreamcodes/iptv_xtream_codes/service start
 fi
 
 echo "Xtream-UI not installed yet. Sleeping..."
