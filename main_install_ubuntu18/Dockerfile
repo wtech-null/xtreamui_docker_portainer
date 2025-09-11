@@ -73,6 +73,17 @@ RUN echo "iptables-persistent iptables-persistent/autosave_v4 boolean true" | de
  && apt-get install -y iptables-persistent \
  && rm -rf /var/lib/apt/lists/*
 
+# Folders
+RUN mkdir -p \
+  /home/xtreamcodes/iptv_xtream_codes/nginx/conf \
+  /home/xtreamcodes/iptv_xtream_codes/nginx/sbin \
+  /home/xtreamcodes/iptv_xtream_codes/nginx_rtmp/conf \
+  /home/xtreamcodes/iptv_xtream_codes/nginx_rtmp/sbin \
+  /home/xtreamcodes/iptv_xtream_codes/php/etc \
+  /home/xtreamcodes/iptv_xtream_codes/wwwdir \
+  /home/xtreamcodes/iptv_xtream_codes/crons \
+  /home/xtreamcodes/iptv_xtream_codes/admin
+
 # Downloads and Extracts
 RUN wget -q -O /tmp/xtreamcodes.tar.gz https://media.githubusercontent.com/media/wtech-null/xtreamui_docker_portainer/refs/heads/main/zipfiles/main.tar.gz \
  && tar -zxvf /tmp/xtreamcodes.tar.gz -C /home/xtreamcodes/ >/dev/null \
@@ -96,17 +107,6 @@ RUN wget -q -O /tmp/xtreamuithings.zip https://media.githubusercontent.com/media
  && cp -rf /tmp/xtreamui-things-master/admin-modified/* /home/xtreamcodes/iptv_xtream_codes/admin/ >/dev/null \
  && rm -rf /tmp/xtreamui-things-master /tmp/xtreamuithings.zip \
  && chown -R xtreamcodes:xtreamcodes /home/xtreamcodes
-
-# Folders
-RUN mkdir -p \
-  /home/xtreamcodes/iptv_xtream_codes/nginx/conf \
-  /home/xtreamcodes/iptv_xtream_codes/nginx/sbin \
-  /home/xtreamcodes/iptv_xtream_codes/nginx_rtmp/conf \
-  /home/xtreamcodes/iptv_xtream_codes/nginx_rtmp/sbin \
-  /home/xtreamcodes/iptv_xtream_codes/php/etc \
-  /home/xtreamcodes/iptv_xtream_codes/wwwdir \
-  /home/xtreamcodes/iptv_xtream_codes/crons \
-  /home/xtreamcodes/iptv_xtream_codes/admin
 
 # Utils & configs
 RUN wget -q -O /etc/cron.d/xtreamui https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/crons/xtreamui.cron
