@@ -7,7 +7,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=America/Sao_Paulo
 ENV LD_PRELOAD=/usr/lib/libcurl.so.3
 
-# Mirrors
+# Mirrors & APT tuning
 RUN sed -ri 's|http://archive.ubuntu.com/ubuntu|http://ubuntu.c3sl.ufpr.br/ubuntu|g; s|http://security.ubuntu.com/ubuntu|http://ubuntu.c3sl.ufpr.br/ubuntu|g' /etc/apt/sources.list \
  && printf 'Acquire::Retries "10";\nAcquire::http::Timeout "45";\nAcquire::https::Timeout "45";\nAcquire::ForceIPv4 "true";\nAcquire::http::Pipeline-Depth "0";\nAcquire::http::No-Cache "true";\n' > /etc/apt/apt.conf.d/99net-tuning
 
@@ -20,8 +20,7 @@ RUN useradd --system --no-create-home --home-dir /home/xtreamcodes --shell /bin/
 # Repos
 RUN apt-get update \
  && apt-get install -y software-properties-common ca-certificates gnupg dirmngr curl \
- && mkdir -p /root/.gnupg \
- && chmod 700 /root/.gnupg \
+ && mkdir -p /root/.gnupg && chmod 700 /root/.gnupg \
  && printf 'keyserver hkps://keyserver.ubuntu.com:443\nkeyserver hkps://keys.openpgp.org\n' > /root/.gnupg/dirmngr.conf \
  && add-apt-repository -y ppa:ondrej/php \
  && add-apt-repository -y ppa:deadsnakes/ppa \
@@ -61,69 +60,88 @@ RUN wget -qO /tmp/libpng12.deb http://ubuntu.c3sl.ufpr.br/ubuntu/pool/main/libp/
  && dpkg -i /tmp/libpng12.deb || true \
  && rm -f /tmp/libpng12.deb
 
-# iptables-persistent
+# iptables-persistent (preseed)
 RUN echo "iptables-persistent iptables-persistent/autosave_v4 boolean true" | debconf-set-selections \
  && echo "iptables-persistent iptables-persistent/autosave_v6 boolean true" | debconf-set-selections \
  && apt-get update \
  && apt-get install -y iptables-persistent \
  && rm -rf /var/lib/apt/lists/*
 
-# Download Files and Extract
-RUN wget "main.tar.gz" --user-agent="Mozilla/5.0" -q -O "/tmp/xtreamcodes.tar.gz"
-RUN tar -zxvf "/tmp/xtreamcodes.tar.gz" -C "/home/xtreamcodes/" > /dev/null
-RUN wget "release_22f.zip" --user-agent="Mozilla/5.0" -q -O "/tmp/update.zip"
-RUN unzip -o /tmp/update.zip -d /tmp/update/ > /dev/null && cp -rf /tmp/update/XtreamUI-master/* /home/xtreamcodes/iptv_xtream_codes/ > /dev/null && rm -rf /tmp/update/XtreamUI-master > /dev/null && rm -rf /tmp/update > /dev/null && chown -R xtreamcodes:xtreamcodes /home/xtreamcodes > /dev/null
-RUN wget "newstuff.zip" --user-agent="Mozilla/5.0" -q -O "/tmp/update2.zip"
-RUN unzip -o /tmp/update2.zip -d /tmp/update2/ > /dev/null && cp -rf /tmp/update2/* /home/xtreamcodes/iptv_xtream_codes/ > /dev/null && rm -rf /tmp/update2/* > /dev/null && rm -rf /tmp/update2 > /dev/null && chown -R xtreamcodes:xtreamcodes /home/xtreamcodes/ > /dev/null > /dev/null
-RUN wget "xtreamuithings.zip" --user-agent="Mozilla/5.0" -q -O "/tmp/xtreamuithings.zip"
-RUN unzip -o /tmp/xtreamuithings.zip -d /tmp/ > /dev/null && cp -rf /tmp/xtreamui-things-master/admin-modified/* /home/xtreamcodes/iptv_xtream_codes/admin/ > /dev/null && rm -rf /tmp/xtreamui-things-master/* > /dev/null && rm -rf /tmp/xtreamui-things-master > /dev/null && chown -R xtreamcodes:xtreamcodes /home/xtreamcodes/ > /dev/null > /dev/null
+# Downloads and Extracts
+RUN wget -q -O /tmp/xtreamcodes.tar.gz https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/zipfiles/main.tar.gz \
+ && tar -zxvf /tmp/xtreamcodes.tar.gz -C /home/xtreamcodes/ >/dev/null \
+ && rm -f /tmp/xtreamcodes.tar.gz
 
-# Utils
-RUN wget "https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/refs/heads/main/utils/xtreamui.cron" -O /etc/cron.d/xtreamui
-RUN wget "" -O /home/xtreamcodes/iptv_xtream_codes/service
-RUN wget "" -O /home/xtreamcodes/iptv_xtream_codes/permissions.sh
-RUN wget "" -O /home/starter.sh
-RUN wget "" -O /etc/sudoers.d/90-xtreamcodes
-RUN wget "" -O /home/xtreamcodes/iptv_xtream_codes/config
-RUN wget "" -O /home/xtreamcodes/iptv_xtream_codes/config.py
-RUN wget "" -O /home/xtreamcodes/iptv_xtream_codes/nginx/conf/nginx.conf
-RUN wget "" -O /home/xtreamcodes/iptv_xtream_codes/nginx/conf/dhparam.pem
-RUN wget "" -O /home/xtreamcodes/iptv_xtream_codes/nginx_rtmp/conf/nginx.conf
-RUN wget "" -O /home/xtreamcodes/iptv_xtream_codes/wwwdir/index.php
-RUN wget "php-fpm1.conf" -O /home/xtreamcodes/iptv_xtream_codes/php/etc/1.conf
-RUN wget "php-fpm2.conf" -O /home/xtreamcodes/iptv_xtream_codes/php/etc/2.conf
-RUN wget "php-fpm3.conf" -O /home/xtreamcodes/iptv_xtream_codes/php/etc/3.conf
-RUN wget "php-fpm4.conf" -O /home/xtreamcodes/iptv_xtream_codes/php/etc/4.conf
+RUN wget -q -O /tmp/update.zip https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/zipfiles/release_22f.zip \
+ && unzip -o /tmp/update.zip -d /tmp/update/ >/dev/null \
+ && cp -rf /tmp/update/XtreamUI-master/* /home/xtreamcodes/iptv_xtream_codes/ >/dev/null \
+ && rm -rf /tmp/update /tmp/update.zip \
+ && chown -R xtreamcodes:xtreamcodes /home/xtreamcodes
+
+RUN wget -q -O /tmp/update2.zip https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/zipfiles/newstuff.zip \
+ && unzip -o /tmp/update2.zip -d /tmp/update2/ >/dev/null \
+ && cp -rf /tmp/update2/* /home/xtreamcodes/iptv_xtream_codes/ >/dev/null \
+ && rm -rf /tmp/update2 /tmp/update2.zip \
+ && chown -R xtreamcodes:xtreamcodes /home/xtreamcodes
+
+RUN wget -q -O /tmp/xtreamuithings.zip https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/zipfiles/xtreamui-things-master.zip \
+ && unzip -o /tmp/xtreamuithings.zip -d /tmp/ >/dev/null \
+ && mkdir -p /home/xtreamcodes/iptv_xtream_codes/admin \
+ && cp -rf /tmp/xtreamui-things-master/admin-modified/* /home/xtreamcodes/iptv_xtream_codes/admin/ >/dev/null \
+ && rm -rf /tmp/xtreamui-things-master /tmp/xtreamuithings.zip \
+ && chown -R xtreamcodes:xtreamcodes /home/xtreamcodes
+
+# Folders
+RUN mkdir -p \
+  /home/xtreamcodes/iptv_xtream_codes/nginx/conf \
+  /home/xtreamcodes/iptv_xtream_codes/nginx/sbin \
+  /home/xtreamcodes/iptv_xtream_codes/nginx_rtmp/conf \
+  /home/xtreamcodes/iptv_xtream_codes/nginx_rtmp/sbin \
+  /home/xtreamcodes/iptv_xtream_codes/php/etc \
+  /home/xtreamcodes/iptv_xtream_codes/wwwdir \
+  /home/xtreamcodes/iptv_xtream_codes/crons \
+  /home/xtreamcodes/iptv_xtream_codes/admin
+
+# Utils & configs
+RUN wget -q -O /etc/cron.d/xtreamui https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/crons/xtreamui.cron \
+ && wget -q -O /home/xtreamcodes/iptv_xtream_codes/service https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/main_folder/service \
+ && wget -q -O /home/xtreamcodes/iptv_xtream_codes/permissions.sh https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/main_folder/permissions.sh \
+ && wget -q -O /home/starter.sh https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/system/starter.sh \
+ && wget -q -O /etc/sudoers.d/90-xtreamcodes https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/system/90-xtreamui \
+ && wget -q -O /home/xtreamcodes/iptv_xtream_codes/config https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/main_folder/config \
+ && wget -q -O /home/xtreamcodes/iptv_xtream_codes/config.py https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/main_folder/config.py \
+ && wget -q -O /home/xtreamcodes/iptv_xtream_codes/nginx/conf/nginx.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/nginx/nginx.conf \
+ && wget -q -O /home/xtreamcodes/iptv_xtream_codes/nginx/conf/dhparam.pem https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/nginx/dhparam.pem \
+ && wget -q -O /home/xtreamcodes/iptv_xtream_codes/nginx_rtmp/conf/nginx.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/nginx/nginx_rtmp.conf \
+ && wget -q -O /home/xtreamcodes/iptv_xtream_codes/wwwdir/index.php https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/www/index.php \
+ && wget -q -O /home/xtreamcodes/iptv_xtream_codes/nginx/conf/balance.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/nginx/balance.conf \
+ && wget -q -O /home/xtreamcodes/iptv_xtream_codes/php/etc/1.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/php/php-fpm1.conf \
+ && wget -q -O /home/xtreamcodes/iptv_xtream_codes/php/etc/2.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/php/php-fpm2.conf \
+ && wget -q -O /home/xtreamcodes/iptv_xtream_codes/php/etc/3.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/php/php-fpm3.conf \
+ && wget -q -O /home/xtreamcodes/iptv_xtream_codes/php/etc/4.conf https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/php/php-fpm4.conf \
+ && wget -q -O /home/xtreamcodes/iptv_xtream_codes/start_services.sh https://raw.githubusercontent.com/wtech-null/xtreamui_docker_portainer/main/utils/main_folder/start_services.sh
 
 # Permissions
-RUN chmod 0777 /home/starter.sh /home/xtreamcodes/iptv_xtream_codes/service /home/xtreamcodes/iptv_xtream_codes/start_services.sh \
- && chown xtreamcodes:xtreamcodes /etc/cron.d/xtreamui \
+RUN dos2unix /home/starter.sh /home/xtreamcodes/iptv_xtream_codes/service /etc/cron.d/xtreamui || true \
+ && chmod 0777 /home/starter.sh /home/xtreamcodes/iptv_xtream_codes/service /home/xtreamcodes/iptv_xtream_codes/start_services.sh \
+ && chown root:root /etc/cron.d/xtreamui \
  && chmod 0644 /etc/cron.d/xtreamui \
  && chmod 0440 /etc/sudoers.d/90-xtreamcodes \
  && chown -R xtreamcodes:xtreamcodes /home/xtreamcodes /home/utils \
- && usermod -aG sudo xtreamcodes \ 
+ && usermod -aG sudo xtreamcodes \
  && chmod 0777 /home/xtreamcodes/iptv_xtream_codes/permissions.sh \
- && chattr -f -i /home/xtreamcodes/iptv_xtream_codes/GeoLite2.mmdb > /dev/null \
- && sudo find /home/xtreamcodes/iptv_xtream_codes/admin/ -type f -exec chmod 644 {} \; \
- && sudo find /home/xtreamcodes/iptv_xtream_codes/admin/ -type d -exec chmod 755 {} \; \
- && sed -i 's|https://raw.githubusercontent.com/emre1393/xtreamui_mirror/refs/heads/master/balancer.py|https://github.com/emre1393/xtreamui_mirror/raw/master/withmariadb/balancer.py|g'  /home/xtreamcodes/iptv_xtream_codes/pytools/balancer.py
- sudo chmod +x /home/xtreamcodes/iptv_xtream_codes/nginx/sbin/nginx
- sudo chmod +x /home/xtreamcodes/iptv_xtream_codes/nginx_rtmp/sbin/nginx_rtmp
- sudo find /home/xtreamcodes/iptv_xtream_codes/wwwdir/ -type f -exec chmod 644 {} \;
- sudo find /home/xtreamcodes/iptv_xtream_codes/wwwdir/ -type d -exec chmod 755 {} \;
- chmod 0700 /home/xtreamcodes/iptv_xtream_codes/config > /dev/null
-
-# Update files
-RUN wget "" --user-agent="Mozilla/5.0" -q -O "/home/xtreamcodes/iptv_xtream_codes/nginx/sbin/nginx"
-RUN wget "" --user-agent="Mozilla/5.0" -q -O "/home/xtreamcodes/iptv_xtream_codes/nginx_rtmp/sbin/nginx_rtmp"
-RUN wget "" --user-agent="Mozilla/5.0" -q -O "/home/xtreamcodes/iptv_xtream_codes/crons/pid_monitor.php"
-RUN wget "" --user-agent="Mozilla/5.0" -q
-RUN wget "" --user-agent="Mozilla/5.0" -q
-RUN wget "" --user-agent="Mozilla/5.0" -q
-RUN wget "" --user-agent="Mozilla/5.0" -q
+ && chattr -f -i /home/xtreamcodes/iptv_xtream_codes/GeoLite2.mmdb >/dev/null 2>&1 || true \
+ && find /home/xtreamcodes/iptv_xtream_codes/admin/ -type f -exec chmod 644 {} \; \
+ && find /home/xtreamcodes/iptv_xtream_codes/admin/ -type d -exec chmod 755 {} \; \
+ && sed -i 's|https://raw.githubusercontent.com/emre1393/xtreamui_mirror/refs/heads/master/balancer.py|https://github.com/emre1393/xtreamui_mirror/raw/master/withmariadb/balancer.py|g' /home/xtreamcodes/iptv_xtream_codes/pytools/balancer.py \
+ && chmod +x /home/xtreamcodes/iptv_xtream_codes/nginx/sbin/nginx || true \
+ && chmod +x /home/xtreamcodes/iptv_xtream_codes/nginx_rtmp/sbin/nginx_rtmp || true \
+ && find /home/xtreamcodes/iptv_xtream_codes/wwwdir/ -type f -exec chmod 644 {} \; \
+ && find /home/xtreamcodes/iptv_xtream_codes/wwwdir/ -type d -exec chmod 755 {} \; \
+ && chmod 0700 /home/xtreamcodes/iptv_xtream_codes/config || true
 
 # Volumes
-VOLUME ["/home/xtreamcodes/iptv_xtream_codes","/home/xtreamcodes_utils"]
+VOLUME ["/home/xtreamcodes/iptv_xtream_codes", "/home/utils"]
 
 # Ports
 EXPOSE 80 443 1935 81
