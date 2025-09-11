@@ -1,7 +1,7 @@
 # Dockerfile-main
 FROM ubuntu:18.04
 
-WORKDIR /home
+WORKDIR /home/xtreamcodes
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=America/Sao_Paulo
@@ -148,6 +148,11 @@ RUN dos2unix /home/starter.sh /home/xtreamcodes/iptv_xtream_codes/service /etc/c
  && find /home/xtreamcodes/iptv_xtream_codes/wwwdir/ -type f -exec chmod 644 {} \; \
  && find /home/xtreamcodes/iptv_xtream_codes/wwwdir/ -type d -exec chmod 755 {} \; \
  && chmod 0700 /home/xtreamcodes/iptv_xtream_codes/config || true
+
+# Finish
+RUN apt-get update \
+ && apt-get upgrade -y \
+ && apt-get dist-upgrade -y
 
 # Volumes
 VOLUME ["/home/xtreamcodes/iptv_xtream_codes", "/home/utils"]
