@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  xtreamui-core:
+    build:
+      context: .
+      dockerfile: Dockerfile-main
+    container_name: xtreamui-core
+    environment:
+      TZ: America/Sao_Paulo
+
+      REPO_ROOT_UI: "https://github.com/emre1393/xtreamui_mirror/releases/latest/download"
+      REPO_ROOT_THINGS: "https://github.com/emre1393/xtreamui-things/archive/refs/heads"
+
+      URL_CORE: "${REPO_ROOT_UI}/main.tar.gz"
+      URL_ADMIN_BASE: "${REPO_ROOT_UI}/release_22f.zip"
+      URL_ADMIN_NEW: "${REPO_ROOT_UI}/newstuff.zip"
+      URL_ADMIN_MODS: "${REPO_ROOT_THINGS}/master.zip"
+      URL_NGINX_BIN: "${REPO_ROOT_UI}/nginx"
+      URL_NGINX_RTMP_BIN: "${REPO_ROOT_UI}/nginx_rtmp"
+      URL_PID_MON: "${REPO_ROOT_UI}/pid_monitor.php"
+      URL_GEOLITE: "${REPO_ROOT_UI}/GeoLite2.mmdb"
+      URL_YTDL: "https://yt-dl.org/downloads/latest/youtube-dl"
+
+      # Opcional: defina um código fixo para o painel admin
+      # ACCESS_CODE: "meuCodigoAdmin123"
+
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "81:81"
+      - "443:443"
+      - "1935:1935"
+    volumes:
+      - xtreamui_core:/home/xtreamcodes/iptv_xtream_codes
+      - xtreamui_utils:/home/utils
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://127.0.0.1/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+volumes:
+  xtreamui_core: {}
+  xtreamui_utils: {}

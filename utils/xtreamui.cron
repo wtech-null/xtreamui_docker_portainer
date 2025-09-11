@@ -1,3 +1,5 @@
 # Xtream-UI
-# A cada 3 horas, limpa os logs (rodando como root).
-0 */3 * * * root sh -c ': > /home/xtreamcodes/iptv_xtream_codes/logs/main.error.log && : > /home/xtreamcodes/iptv_xtream_codes/logs/main.access.log'
+0 */3 * * * root /bin/mkdir -p /home/xtreamcodes/iptv_xtream_codes/logs && /usr/bin/truncate -s 0 /home/xtreamcodes/iptv_xtream_codes/logs/main.error.log /home/xtreamcodes/iptv_xtream_codes/logs/main.access.log
+
+# Xtream-UI
+* * * * * root /home/xtreamcodes/iptv_xtream_codes/php/bin/php -q /home/xtreamcodes/iptv_xtream_codes/crons/pid_monitor.php >/dev/null 2>&1

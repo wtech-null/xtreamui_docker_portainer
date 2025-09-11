@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+
+SCRIPT=/home/xtreamcodes/iptv_xtream_codes
+USER=$(whoami)
+
+if [[ "$USER" != "root" ]]; then
+  echo "Please run as root!"
+  exit 0
+fi
+
+start() {
+  pids=$(pgrep -u xtreamcodes nginx | wc -l)
+  if [[ "$pids" != "0" ]]; then
+    echo 'xtreamcodes is already running'
+    return 0
+  fi
+  echo 'Starting xtreamcodes...'
+
+  kill $(ps aux | grep 'xtreamcodes' | grep -v grep | grep -v "$SCRIPT/service" | awk '{print $2}') 2>/dev/null || true
+  sleep 2
+
+  sudo -u xtreamcodes "$SCRIPT/php/bin/php" "$SCRIPT/crons/setup_cache.php"
+  sudo -u xtreamcodes "$SCRIPT/php/bin/php" "$SCRIPT/tools/signal_receiver.php" >/dev/null 2>&1 &
+  sudo -u xtreamcodes "$SCRIPT/php/bin/php" "$SCRIPT/tools/pipe_reader.php"   >/dev/null 2>&1 &
+  chown -R xtreamcodes:xtreamcodes /sys/class/net
+  chown -R xtreamcodes:xtreamcodes /home/xtreamcodes >/dev/null 2>&1
+  sleep 1
+  start-stop-daemon --start --quiet --pidfile "$SCRIPT/php/1.pid" --exec "$SCRIPT/php/sbin/php-fpm" -- --daemonize --fpm-config "$SCRIPT/php/etc/1.conf"
+  start-stop-daemon --start --quiet --pidfile "$SCRIPT/php/2.pid" --exec "$SCRIPT/php/sbin/php-fpm" -- --daemonize --fpm-config "$SCRIPT/php/etc/2.conf"
+  start-stop-daemon --start --quiet --pidfile "$SCRIPT/php/3.pid" --exec "$SCRIPT/php/sbin/php-fpm" -- --daemonize --fpm-config "$SCRIPT/php/etc/3.conf"
+  start-stop-daemon --start --quiet --pidfile "$SCRIPT/php/4.pid" --exec "$SCRIPT/php/sbin/php-fpm" -- --daemonize --fpm-config "$SCRIPT/php/etc/4.conf"
+  sleep 3
+  chmod +x "$SCRIPT/nginx_rtmp/sbin/nginx_rtmp"
+  "$SCRIPT/nginx_rtmp/sbin/nginx_rtmp"
+  sleep 1
+  chmod +x "$SCRIPT/nginx/sbin/nginx"
+  "$SCRIPT/nginx/sbin/nginx"
+  echo 'Running in foreground...'
+  # Mantém o processo no foreground para o container ficar "Up"
+  sleep infinity
+}
+
+stop() {
+  pids=$(pgrep -u xtreamcodes nginx | wc -l)
+  if [[ "$pids" = "0" ]]; then
+    echo 'xtreamcodes is not running'
+    return 0   # <- não falha mais quando já está parado
+  fi
+  echo 'Stopping xtreamcodes...'
+  sudo killall -u xtreamcodes || true
+  sleep 2
+  kill $(ps aux | grep 'xtreamcodes' | grep -v grep | grep -v "$SCRIPT/service" | awk '{print $2}') 2>/dev/null || true
+  sleep 2
+  return 0
+}
+
+reload() {
+  pids=$(pgrep -u xtreamcodes nginx | wc -l)
+  if [[ "$pids" = "0" ]]; then
+    echo 'xtreamcodes nginx is not running'
+    return 0
+  fi
+  echo 'Reloading nginx config for xtreamcodes...'
+  "$SCRIPT/nginx/sbin/nginx" -s reload || true
+  "$SCRIPT/nginx_rtmp/sbin/nginx_rtmp" -s reload || true
+}
+
+case "$1" in
+  start)   start ;;
+  stop)    stop  ;;
+  reload)  reload;;
+  restart) stop; start ;;
+  *) echo "Usage: $0 {start|stop|restart|reload}" ;;
+esac
+
+exit 0
