@@ -9,6 +9,10 @@ services:
     restart: unless-stopped
     environment:
       - TZ=America/Sao_Paulo
+    ulimits:
+      nofile:
+        soft: 2147483584
+        hard: 2147483584      
     ports:
       - "0.0.0.0:80:80"
       - "0.0.0.0:443:443"
