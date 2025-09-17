@@ -45,13 +45,13 @@ RUN apt-get update \
       xz-utils zip unzip build-essential \
       manpages-dev checkinstall aria2 git cron \
       dos2unix sudo nano libfreetype6 ppa-purge \
-      libcap2-bin pkg-config mtr anacron \
+      libcap2-bin pkg-config mtr traceroute anacron \
       gnupg apt-transport-https lsb-release \
       software-properties-common ca-certificates \
       autoconf make gcc libmnl-dev uuid-dev zlib1g-dev \
       redis-tools nscd mc libjemalloc2 snapd openssl libcurl4 \
       libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev \
-      libc6-dev libbz2-dev libffi-dev libpng16-16 curl \
+      libc6-dev libbz2-dev libffi-dev libpng16-16 curl iputils-ping libpcre3 \
  && rm -rf /var/lib/apt/lists/*
 
 # libpng12 legacy
