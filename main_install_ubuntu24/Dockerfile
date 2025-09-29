@@ -41,7 +41,7 @@ RUN apt-get update \
       libmaxminddb0 libmaxminddb-dev \
       libgeoip-dev libxslt1-dev libonig-dev e2fsprogs \
       sysstat alsa-utils v4l-utils mcrypt \
-      certbot libjpeg-dev libpng-dev php-ssh2 \
+      certbot libjpeg-dev php-ssh2 \
       xz-utils zip unzip build-essential \
       manpages-dev checkinstall aria2 git cron \
       dos2unix sudo nano libfreetype6 ppa-purge \
@@ -49,27 +49,60 @@ RUN apt-get update \
       gnupg apt-transport-https lsb-release \
       software-properties-common ca-certificates \
       autoconf make gcc libmnl-dev uuid-dev zlib1g-dev \
-      redis-tools nscd mc libjemalloc2 snapd openssl libcurl4 \
-      libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev \
-      libc6-dev libbz2-dev libffi-dev libpng16-16 curl iputils-ping libpcre3 \
+      redis-tools nscd mc libjemalloc2 snapd openssl \
+      libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6 \
+      libc6-dev libbz2-dev libffi-dev curl iputils-ping libpcre3 \
  && rm -rf /var/lib/apt/lists/*
 
-# libpng12 legacy
-RUN wget -qO /tmp/libpng12.deb http://ubuntu.c3sl.ufpr.br/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_amd64.deb \
- && dpkg -i /tmp/libpng12.deb || true \
- && rm -f /tmp/libpng12.deb
+# libpng12 (compat)
+RUN set -eux; \
+  apt-get update; apt-get install -y --no-install-recommends wget ca-certificates; \
+  cd /tmp; \
+  wget -O libpng12.deb \
+    http://ubuntu.c3sl.ufpr.br/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_amd64.deb; \
+  dpkg-deb -x libpng12.deb /tmp/png12; \
+  install -Dm644 /tmp/png12/lib/x86_64-linux-gnu/libpng12.so.0.54.0 \
+                  /usr/lib/x86_64-linux-gnu/libpng12.so.0.54.0; \
+  ln -sf libpng12.so.0.54.0 /usr/lib/x86_64-linux-gnu/libpng12.so.0; \
+  ldconfig; \
+  ldconfig -p | grep -q 'libpng12\.so\.0'; \
+  rm -rf /tmp/png12 /tmp/libpng12.deb
 
- # libssl1.1
- RUN wget -qO /tmp/libssl1.1.deb \
-    http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb \
- && dpkg -i /tmp/libssl1.1.deb \
- && rm /tmp/libssl1.1.deb
+# libssl1.1 (compat) para binários legados que pedem *.so.1.1
+RUN set -eux; \
+  apt-get update; apt-get install -y --no-install-recommends wget ca-certificates; \
+  cd /tmp; \
+  wget -O libssl1.1.deb \
+    http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb; \
+  dpkg-deb -x libssl1.1.deb /tmp/ssl11; \
+  install -Dm644 /tmp/ssl11/usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 \
+                 /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1; \
+  install -Dm644 /tmp/ssl11/usr/lib/x86_64-linux-gnu/libssl.so.1.1 \
+                 /usr/lib/x86_64-linux-gnu/libssl.so.1.1; \
+  ldconfig; \
+  ldconfig -p | grep -E 'lib(crypto|ssl)\.so\.1\.1'; \
+  rm -rf /tmp/ssl11 /tmp/libssl1.1.deb
 
- # libzip5
- RUN wget -qO /tmp/libzip5_1.5.1.deb \
-    http://archive.ubuntu.com/ubuntu/pool/universe/libz/libzip/libzip5_1.5.1-0ubuntu1_amd64.deb \
- && dpkg -i /tmp/libzip5_1.5.1.deb \
- && rm /tmp/libzip5_1.5.1.deb
+# libzip5 (compat) para binários que pedem *.so.5
+RUN set -eux; \
+  cd /tmp; \
+  wget -O libzip5.deb \
+    http://archive.ubuntu.com/ubuntu/pool/universe/libz/libzip/libzip5_1.5.1-0ubuntu1_amd64.deb; \
+  dpkg-deb -x libzip5.deb ./zip5; \
+  dest="/usr/lib/x86_64-linux-gnu"; \
+  mkdir -p "$dest"; \
+  # Copia qualquer variante fornecida pelo .deb (ex: libzip.so.5.0, 5.0.1, etc.)
+  if [ -d ./zip5/usr/lib/x86_64-linux-gnu ]; then \
+    cp -av ./zip5/usr/lib/x86_64-linux-gnu/libzip.so* "$dest/"; \
+  else \
+    cp -av ./zip5/lib/x86_64-linux-gnu/libzip.so* "$dest/"; \
+  fi; \
+  # Garante o link da SONAME
+  real="$(basename "$(ls -1 $dest/libzip.so.5.* 2>/dev/null | head -n1 || true)")"; \
+  if [ -n "$real" ]; then ln -sf "$real" "$dest/libzip.so.5"; fi; \
+  ldconfig; \
+  ldconfig -p | grep libzip || true; \
+  rm -rf /tmp/zip5 /tmp/libzip5.deb
 
 # python2
 RUN wget -qO /tmp/Python-2.7.18.tgz https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz \
